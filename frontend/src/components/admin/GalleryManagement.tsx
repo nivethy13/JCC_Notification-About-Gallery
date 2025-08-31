@@ -1,5 +1,14 @@
 // src/components/GalleryManagement.tsx
 import React, { useState, useEffect, useRef, type JSX } from 'react';
+import type {
+  GalleryImage,
+  Category,
+  Hall,
+  NewImageForm,
+  BulkUpdateForm,
+  NewCategoryForm,
+  ActiveTab
+} from '../../types/gallery';
 import { 
   fetchGalleryImages, 
   fetchCategories, 
@@ -13,70 +22,6 @@ import {
   deleteCategory,
   bulkUploadImages
 } from '../../services/galleryApi';
-
-// Type definitions
-interface GalleryImage {
-  id: string;
-  title: string;
-  description?: string;
-  category?: string;
-  category_name?: string;
-  hall?: string;
-  hall_name?: string;
-  hall_section?: string;
-  is_featured: boolean;
-  is_public: boolean;
-  tags?: string;
-  alt_text?: string;
-  views: number;
-  image_url?: string;
-  thumbnail_url?: string;
-  cloudinary_url?: string;
-  cloudinary_public_id?: string;
-  image?: string;
-  thumbnail?: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  description?: string;
-  is_active: boolean;
-  image_count?: number;
-}
-
-interface Hall {
-  id: string;
-  name: string;
-  section_number: string;
-}
-
-interface NewImageForm {
-  title: string;
-  description: string;
-  category: string;
-  hall: string;
-  is_featured: boolean;
-  is_public: boolean;
-  tags: string;
-  alt_text: string;
-}
-
-interface BulkUpdateForm {
-  category: string;
-  hall: string;
-  is_featured: boolean;
-  is_public: boolean;
-}
-
-interface NewCategoryForm {
-  name: string;
-  description: string;
-  is_active: boolean;
-}
-
-
-type ActiveTab = 'images' | 'categories' | 'halls';
 
 const GalleryManagement: React.FC = () => {
   // Main state
@@ -276,7 +221,7 @@ const GalleryManagement: React.FC = () => {
       formData.append('tags', newImage.tags);
       formData.append('alt_text', newImage.alt_text);
       
-      const createdImage = await createGalleryImage(formData) as GalleryImage;
+      const createdImage = await createGalleryImage(formData);
       setImages([createdImage, ...images]);
       
       // Reset form
@@ -1430,7 +1375,7 @@ const GalleryManagement: React.FC = () => {
           <div className="text-center">
             <div className="mx-auto h-12 w-12 text-gray-400">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z" />
               </svg>
             </div>
             <h3 className="mt-2 text-sm font-medium text-gray-900">No images</h3>

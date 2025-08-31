@@ -8,7 +8,7 @@ import AdminNotificationDashboard from './components/admin/AdminNotificationDash
 import NotificationPreferences from './components/NotificationPreferences';
 import WebSocketStatus from './components/WebSocketStatus';
 
-import AboutUs from './pages/About'; 
+import About from './pages/About'; 
 import AboutManagement from './components/admin/AboutManagement'; 
 
 import GalleryPage from './pages/GalleryPage';
@@ -154,7 +154,7 @@ const App: React.FC = () => {
           <main>
             <Routes>
               <Route path="/" element={<HomePage mockUser={mockUser} />} />
-              <Route path="/about" element={<AboutUs />} />
+              <Route path="/about" element={<About />} />
               <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/preferences" element={<NotificationPreferences />} />

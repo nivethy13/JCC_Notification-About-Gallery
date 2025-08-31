@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import { Alert, AlertDescription } from "../ui/alert";
 import { 
   Save, ArrowLeft, Eye, RefreshCw, CheckCircle, 
   FileText, Image as ImageIcon, Users, MapPin, Phone, Mail
 } from 'lucide-react';
 import { aboutApi } from '../../services/aboutService';
-import type{ About } from '../../types/about';
+import type { About } from '../../types/about';
 
-const AboutMangement: React.FC = () => {
+const AboutManagement: React.FC = () => {
   const [aboutData, setAboutData] = useState<About | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -114,17 +114,88 @@ const AboutMangement: React.FC = () => {
       const data = await aboutApi.getAboutContent();
       setAboutData(data);
       
-      // Populate form with fetched data
-      const formFields = { ...data };
-      delete formFields.id;
-      delete formFields.is_active;
-      delete formFields.updated_at;
-      delete formFields.hero_background;
-      delete formFields.hero_background_url;
-      
+      // Properly extract and set form data
       setFormData({
-        ...formFields,
-        hero_background: null
+        // Hero Section
+        hero_title: data.hero_title || '',
+        hero_subtitle: data.hero_subtitle || '',
+        hero_badge: data.hero_badge || '',
+        hero_quote: data.hero_quote || '',
+        hero_background: null,
+
+        // Mission Section
+        mission_heading: data.mission_heading || '',
+        mission_title: data.mission_title || '',
+        mission_subtitle: data.mission_subtitle || '',
+        mission_description: data.mission_description || '',
+        mission_quote: data.mission_quote || '',
+
+        // Vision Section
+        vision_title: data.vision_title || '',
+        vision_description: data.vision_description || '',
+        vision_quote: data.vision_quote || '',
+
+        // Timeline Section
+        timeline_heading: data.timeline_heading || '',
+        timeline_subtitle: data.timeline_subtitle || '',
+        timeline_event_1_year: data.timeline_event_1_year || '',
+        timeline_event_1_title: data.timeline_event_1_title || '',
+        timeline_event_1_description: data.timeline_event_1_description || '',
+        timeline_event_2_year: data.timeline_event_2_year || '',
+        timeline_event_2_title: data.timeline_event_2_title || '',
+        timeline_event_2_description: data.timeline_event_2_description || '',
+        timeline_event_3_year: data.timeline_event_3_year || '',
+        timeline_event_3_title: data.timeline_event_3_title || '',
+        timeline_event_3_description: data.timeline_event_3_description || '',
+
+        // Facilities Section
+        facilities_heading: data.facilities_heading || '',
+        facilities_subtitle: data.facilities_subtitle || '',
+        facility_1_title: data.facility_1_title || '',
+        facility_1_description: data.facility_1_description || '',
+        facility_2_title: data.facility_2_title || '',
+        facility_2_description: data.facility_2_description || '',
+        facility_3_title: data.facility_3_title || '',
+        facility_3_description: data.facility_3_description || '',
+        facility_4_title: data.facility_4_title || '',
+        facility_4_description: data.facility_4_description || '',
+
+        // Cultural Programs Section
+        cultural_heading: data.cultural_heading || '',
+        cultural_subtitle: data.cultural_subtitle || '',
+        cultural_1_title: data.cultural_1_title || '',
+        cultural_1_description: data.cultural_1_description || '',
+        cultural_2_title: data.cultural_2_title || '',
+        cultural_2_description: data.cultural_2_description || '',
+        cultural_3_title: data.cultural_3_title || '',
+        cultural_3_description: data.cultural_3_description || '',
+
+        // Outreach Section
+        outreach_heading: data.outreach_heading || '',
+        outreach_subtitle: data.outreach_subtitle || '',
+        outreach_1_title: data.outreach_1_title || '',
+        outreach_1_description: data.outreach_1_description || '',
+        outreach_2_title: data.outreach_2_title || '',
+        outreach_2_description: data.outreach_2_description || '',
+        outreach_3_title: data.outreach_3_title || '',
+        outreach_3_description: data.outreach_3_description || '',
+
+        // Partnerships Section
+        partnerships_heading: data.partnerships_heading || '',
+        partnerships_subtitle: data.partnerships_subtitle || '',
+        partnership_1_title: data.partnership_1_title || '',
+        partnership_1_description: data.partnership_1_description || '',
+        partnership_2_title: data.partnership_2_title || '',
+        partnership_2_description: data.partnership_2_description || '',
+
+        // Closing Section
+        closing_title: data.closing_title || '',
+        closing_quote: data.closing_quote || '',
+
+        // Contact
+        address: data.address || '',
+        phone: data.phone || '',
+        email: data.email || '',
       });
       
       if (data.hero_background_url) {
@@ -166,6 +237,7 @@ const AboutMangement: React.FC = () => {
       setSaving(true);
       setError(null);
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updateData: any = { ...formData };
       
       // Only include hero_background if a new file was selected
@@ -276,7 +348,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="hero_title"
                     value={formData.hero_title}
-                    onChange={(e) => handleInputChange('hero_title', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('hero_title', e.target.value)}
                   />
                 </div>
                 <div>
@@ -284,7 +356,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="hero_badge"
                     value={formData.hero_badge}
-                    onChange={(e) => handleInputChange('hero_badge', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('hero_badge', e.target.value)}
                   />
                 </div>
               </div>
@@ -294,7 +366,7 @@ const AboutMangement: React.FC = () => {
                 <Textarea
                   id="hero_subtitle"
                   value={formData.hero_subtitle}
-                  onChange={(e) => handleInputChange('hero_subtitle', e.target.value)}
+                  onChange={(e: { target: { value: string; }; }) => handleInputChange('hero_subtitle', e.target.value)}
                   rows={2}
                 />
               </div>
@@ -304,7 +376,7 @@ const AboutMangement: React.FC = () => {
                 <Textarea
                   id="hero_quote"
                   value={formData.hero_quote}
-                  onChange={(e) => handleInputChange('hero_quote', e.target.value)}
+                  onChange={(e: { target: { value: string; }; }) => handleInputChange('hero_quote', e.target.value)}
                   rows={2}
                 />
               </div>
@@ -346,7 +418,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="mission_heading"
                     value={formData.mission_heading}
-                    onChange={(e) => handleInputChange('mission_heading', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('mission_heading', e.target.value)}
                   />
                 </div>
                 <div>
@@ -354,7 +426,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="mission_subtitle"
                     value={formData.mission_subtitle}
-                    onChange={(e) => handleInputChange('mission_subtitle', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('mission_subtitle', e.target.value)}
                   />
                 </div>
               </div>
@@ -367,7 +439,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="mission_title"
                     value={formData.mission_title}
-                    onChange={(e) => handleInputChange('mission_title', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('mission_title', e.target.value)}
                   />
                 </div>
                 <div>
@@ -375,7 +447,7 @@ const AboutMangement: React.FC = () => {
                   <Textarea
                     id="mission_description"
                     value={formData.mission_description}
-                    onChange={(e) => handleInputChange('mission_description', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('mission_description', e.target.value)}
                     rows={3}
                   />
                 </div>
@@ -384,7 +456,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="mission_quote"
                     value={formData.mission_quote}
-                    onChange={(e) => handleInputChange('mission_quote', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('mission_quote', e.target.value)}
                   />
                 </div>
               </div>
@@ -397,7 +469,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="vision_title"
                     value={formData.vision_title}
-                    onChange={(e) => handleInputChange('vision_title', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('vision_title', e.target.value)}
                   />
                 </div>
                 <div>
@@ -405,7 +477,7 @@ const AboutMangement: React.FC = () => {
                   <Textarea
                     id="vision_description"
                     value={formData.vision_description}
-                    onChange={(e) => handleInputChange('vision_description', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('vision_description', e.target.value)}
                     rows={3}
                   />
                 </div>
@@ -414,7 +486,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="vision_quote"
                     value={formData.vision_quote}
-                    onChange={(e) => handleInputChange('vision_quote', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('vision_quote', e.target.value)}
                   />
                 </div>
               </div>
@@ -436,7 +508,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="timeline_heading"
                     value={formData.timeline_heading}
-                    onChange={(e) => handleInputChange('timeline_heading', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('timeline_heading', e.target.value)}
                   />
                 </div>
                 <div>
@@ -444,7 +516,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="timeline_subtitle"
                     value={formData.timeline_subtitle}
-                    onChange={(e) => handleInputChange('timeline_subtitle', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('timeline_subtitle', e.target.value)}
                   />
                 </div>
               </div>
@@ -459,7 +531,7 @@ const AboutMangement: React.FC = () => {
                       <Input
                         id={`timeline_event_${num}_year`}
                         value={formData[`timeline_event_${num}_year` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`timeline_event_${num}_year` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`timeline_event_${num}_year` as keyof typeof formData, e.target.value)}
                       />
                     </div>
                     <div>
@@ -467,7 +539,7 @@ const AboutMangement: React.FC = () => {
                       <Input
                         id={`timeline_event_${num}_title`}
                         value={formData[`timeline_event_${num}_title` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`timeline_event_${num}_title` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`timeline_event_${num}_title` as keyof typeof formData, e.target.value)}
                       />
                     </div>
                   </div>
@@ -476,7 +548,7 @@ const AboutMangement: React.FC = () => {
                     <Textarea
                       id={`timeline_event_${num}_description`}
                       value={formData[`timeline_event_${num}_description` as keyof typeof formData] as string}
-                      onChange={(e) => handleInputChange(`timeline_event_${num}_description` as keyof typeof formData, e.target.value)}
+                      onChange={(e: { target: { value: string; }; }) => handleInputChange(`timeline_event_${num}_description` as keyof typeof formData, e.target.value)}
                       rows={2}
                     />
                   </div>
@@ -497,7 +569,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="facilities_heading"
                     value={formData.facilities_heading}
-                    onChange={(e) => handleInputChange('facilities_heading', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('facilities_heading', e.target.value)}
                   />
                 </div>
                 <div>
@@ -505,7 +577,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="facilities_subtitle"
                     value={formData.facilities_subtitle}
-                    onChange={(e) => handleInputChange('facilities_subtitle', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('facilities_subtitle', e.target.value)}
                   />
                 </div>
               </div>
@@ -520,7 +592,7 @@ const AboutMangement: React.FC = () => {
                       <Input
                         id={`facility_${num}_title`}
                         value={formData[`facility_${num}_title` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`facility_${num}_title` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`facility_${num}_title` as keyof typeof formData, e.target.value)}
                       />
                     </div>
                     <div>
@@ -528,7 +600,7 @@ const AboutMangement: React.FC = () => {
                       <Textarea
                         id={`facility_${num}_description`}
                         value={formData[`facility_${num}_description` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`facility_${num}_description` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`facility_${num}_description` as keyof typeof formData, e.target.value)}
                         rows={2}
                       />
                     </div>
@@ -550,7 +622,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="cultural_heading"
                     value={formData.cultural_heading}
-                    onChange={(e) => handleInputChange('cultural_heading', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('cultural_heading', e.target.value)}
                   />
                 </div>
                 <div>
@@ -558,7 +630,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="cultural_subtitle"
                     value={formData.cultural_subtitle}
-                    onChange={(e) => handleInputChange('cultural_subtitle', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('cultural_subtitle', e.target.value)}
                   />
                 </div>
               </div>
@@ -573,7 +645,7 @@ const AboutMangement: React.FC = () => {
                       <Input
                         id={`cultural_${num}_title`}
                         value={formData[`cultural_${num}_title` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`cultural_${num}_title` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`cultural_${num}_title` as keyof typeof formData, e.target.value)}
                       />
                     </div>
                     <div>
@@ -581,7 +653,7 @@ const AboutMangement: React.FC = () => {
                       <Textarea
                         id={`cultural_${num}_description`}
                         value={formData[`cultural_${num}_description` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`cultural_${num}_description` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`cultural_${num}_description` as keyof typeof formData, e.target.value)}
                         rows={2}
                       />
                     </div>
@@ -603,7 +675,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="outreach_heading"
                     value={formData.outreach_heading}
-                    onChange={(e) => handleInputChange('outreach_heading', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('outreach_heading', e.target.value)}
                   />
                 </div>
                 <div>
@@ -611,7 +683,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="outreach_subtitle"
                     value={formData.outreach_subtitle}
-                    onChange={(e) => handleInputChange('outreach_subtitle', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('outreach_subtitle', e.target.value)}
                   />
                 </div>
               </div>
@@ -626,7 +698,7 @@ const AboutMangement: React.FC = () => {
                       <Input
                         id={`outreach_${num}_title`}
                         value={formData[`outreach_${num}_title` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`outreach_${num}_title` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`outreach_${num}_title` as keyof typeof formData, e.target.value)}
                       />
                     </div>
                     <div>
@@ -634,7 +706,7 @@ const AboutMangement: React.FC = () => {
                       <Textarea
                         id={`outreach_${num}_description`}
                         value={formData[`outreach_${num}_description` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`outreach_${num}_description` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`outreach_${num}_description` as keyof typeof formData, e.target.value)}
                         rows={2}
                       />
                     </div>
@@ -656,7 +728,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="partnerships_heading"
                     value={formData.partnerships_heading}
-                    onChange={(e) => handleInputChange('partnerships_heading', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('partnerships_heading', e.target.value)}
                   />
                 </div>
                 <div>
@@ -664,7 +736,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="partnerships_subtitle"
                     value={formData.partnerships_subtitle}
-                    onChange={(e) => handleInputChange('partnerships_subtitle', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('partnerships_subtitle', e.target.value)}
                   />
                 </div>
               </div>
@@ -679,7 +751,7 @@ const AboutMangement: React.FC = () => {
                       <Input
                         id={`partnership_${num}_title`}
                         value={formData[`partnership_${num}_title` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`partnership_${num}_title` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`partnership_${num}_title` as keyof typeof formData, e.target.value)}
                       />
                     </div>
                     <div>
@@ -687,7 +759,7 @@ const AboutMangement: React.FC = () => {
                       <Textarea
                         id={`partnership_${num}_description`}
                         value={formData[`partnership_${num}_description` as keyof typeof formData] as string}
-                        onChange={(e) => handleInputChange(`partnership_${num}_description` as keyof typeof formData, e.target.value)}
+                        onChange={(e: { target: { value: string; }; }) => handleInputChange(`partnership_${num}_description` as keyof typeof formData, e.target.value)}
                         rows={2}
                       />
                     </div>
@@ -711,7 +783,7 @@ const AboutMangement: React.FC = () => {
                 <Input
                   id="closing_title"
                   value={formData.closing_title}
-                  onChange={(e) => handleInputChange('closing_title', e.target.value)}
+                  onChange={(e: { target: { value: string; }; }) => handleInputChange('closing_title', e.target.value)}
                 />
               </div>
               <div>
@@ -719,7 +791,7 @@ const AboutMangement: React.FC = () => {
                 <Textarea
                   id="closing_quote"
                   value={formData.closing_quote}
-                  onChange={(e) => handleInputChange('closing_quote', e.target.value)}
+                  onChange={(e: { target: { value: string; }; }) => handleInputChange('closing_quote', e.target.value)}
                   rows={2}
                 />
               </div>
@@ -733,7 +805,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="address"
                     value={formData.address}
-                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('address', e.target.value)}
                   />
                 </div>
                 <div>
@@ -744,7 +816,7 @@ const AboutMangement: React.FC = () => {
                   <Input
                     id="phone"
                     value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('phone', e.target.value)}
                   />
                 </div>
                 <div>
@@ -756,7 +828,7 @@ const AboutMangement: React.FC = () => {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={(e: { target: { value: string; }; }) => handleInputChange('email', e.target.value)}
                   />
                 </div>
               </div>
@@ -790,4 +862,4 @@ const AboutMangement: React.FC = () => {
   );
 };
 
-export default AboutMangement;
+export default AboutManagement;

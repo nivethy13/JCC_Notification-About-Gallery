@@ -8,8 +8,8 @@ export interface About {
   hero_subtitle: string;
   hero_badge: string;
   hero_quote: string;
-  hero_background?: string;
-  hero_background_url?: string | File | null;
+  hero_background_url?: string | null;
+
   
   // Mission Section
   mission_heading: string;

@@ -1,63 +1,58 @@
+// src/pages/GalleryPage.tsx
 import React, { useState, useEffect } from 'react';
+import type { GalleryImage, Category, Hall, GalleryFilters } from '../types/gallery';
 import { fetchGalleryImages, fetchCategories, fetchHalls, fetchGalleryImage } from '../services/galleryApi';
 
-type Image = {
-  id: number;
-  title: string;
-  description?: string;
-  image: string;
-  alt_text?: string;
-  category_name: string;
-  hall_name?: string;
-  hall_section?: number;
-  views: number;
-  formatted_date: string;
-  tags_list: string[];
-  is_featured: boolean;
-  is_public: boolean;
-};
-
-type Category = {
-  id: number;
-  name: string;
-  image_count?: number;
-};
-
-type Hall = {
-  id: number;
-  name: string;
-  section_number: number;
-};
-
-const GalleryPage = () => {
-const [images, setImages] = useState<Image[]>([]); 
-const [categories, setCategories] = useState<Category[]>([]);
-const [halls, setHalls] = useState<Hall[]>([]);
-const [loading, setLoading] = useState(true);
-const [filters, setFilters] = useState({
-  category: '',
-  hall: '',
-  is_featured: false,
-  search: '',
-});
-const [selectedImage, setSelectedImage] = useState<Image | null>(null);
-const [viewingImage, setViewingImage] = useState(false);
+const GalleryPage: React.FC = () => {
+  const [images, setImages] = useState<GalleryImage[]>([]); 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [halls, setHalls] = useState<Hall[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [filters, setFilters] = useState<GalleryFilters>({
+    category: '',
+    hall: '',
+    is_featured: false,
+    search: '',
+  });
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [viewingImage, setViewingImage] = useState<boolean>(false);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadData = async (): Promise<void> => {
       try {
         const [imagesData, categoriesData, hallsData] = await Promise.all([
           fetchGalleryImages(filters),
           fetchCategories(),
           fetchHalls(),
         ]);
-        if (imagesData && typeof imagesData === 'object' && 'results' in imagesData) {
-          setImages((imagesData as { results: Image[] }).results);
+        
+        // Handle images response
+        if (Array.isArray(imagesData)) {
+          setImages(imagesData);
+        } else if (imagesData && 'results' in imagesData) {
+          setImages(imagesData.results || []);
         } else {
-          setImages(imagesData as Image[]);
+          setImages([]);
         }
-        setCategories(categoriesData.results || categoriesData);
-        setHalls(hallsData.results || hallsData);
+        
+        // Handle categories response
+        if (Array.isArray(categoriesData)) {
+          setCategories(categoriesData);
+        } else if (categoriesData && 'results' in categoriesData) {
+          setCategories(categoriesData.results || []);
+        } else {
+          setCategories([]);
+        }
+        
+        // Handle halls response
+        if (Array.isArray(hallsData)) {
+          setHalls(hallsData);
+        } else if (hallsData && 'results' in hallsData) {
+          setHalls(hallsData.results || []);
+        } else {
+          setHalls([]);
+        }
+        
         setLoading(false);
       } catch (error) {
         console.error('Error loading data:', error);
@@ -67,23 +62,16 @@ const [viewingImage, setViewingImage] = useState(false);
     loadData();
   }, [filters]);
 
-  interface Filters {
-    category: string;
-    hall: string;
-    is_featured: boolean;
-    search: string;
-  }
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    setFilters((prev: Filters) => ({
+    setFilters((prev: GalleryFilters) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const clearFilters = () => {
+  const clearFilters = (): void => {
     setFilters({
       category: '',
       hall: '',
@@ -93,7 +81,7 @@ const [viewingImage, setViewingImage] = useState(false);
   };
 
   // Handle image click to view full image and increment view count
-  const handleImageClick = async (image: Image) => {
+  const handleImageClick = async (image: GalleryImage): Promise<void> => {
     try {
       setViewingImage(true);
       // Fetch image details which will increment the view count
@@ -116,12 +104,12 @@ const [viewingImage, setViewingImage] = useState(false);
   };
 
   // Close image modal
-  const closeImageModal = () => {
+  const closeImageModal = (): void => {
     setSelectedImage(null);
   };
 
   // Eye icon for views
-  const EyeIcon = () => (
+  const EyeIcon: React.FC = () => (
     <svg 
       className="w-4 h-4" 
       fill="none" 
@@ -144,14 +132,14 @@ const [viewingImage, setViewingImage] = useState(false);
   );
 
   // Search icon
-  const SearchIcon = () => (
+  const SearchIcon: React.FC = () => (
     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
   );
 
   // Star icon for featured
-  const StarIcon = () => (
+  const StarIcon: React.FC = () => (
     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
     </svg>
@@ -268,7 +256,7 @@ const [viewingImage, setViewingImage] = useState(false);
         </div>
         
         {/* Image Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {images.length > 0 ? (
             images.map(image => (
               <div 
@@ -304,6 +292,8 @@ const [viewingImage, setViewingImage] = useState(false);
                 
                 {/* Hover Effect Indicator */}
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl">
+                </div>
+                
                 {/* Card Content */}
                 <div className="p-4 space-y-3">
                   {/* Title */}
@@ -319,7 +309,7 @@ const [viewingImage, setViewingImage] = useState(false);
                   )}
                   
                   {/* Tags Preview */}
-                  {image.tags_list.length > 0 && (
+                  {image.tags_list && image.tags_list.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {image.tags_list.slice(0, 3).map((tag, i) => (
                         <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
@@ -333,7 +323,6 @@ const [viewingImage, setViewingImage] = useState(false);
                       )}
                     </div>
                   )}
-                </div>
                 </div>
               </div>
             ))
@@ -457,7 +446,7 @@ const [viewingImage, setViewingImage] = useState(false);
                   </div>
                   
                   {/* Tags */}
-                  {selectedImage.tags_list.length > 0 && (
+                  {selectedImage.tags_list && selectedImage.tags_list.length > 0 && (
                     <div className="bg-gray-50 rounded-xl p-4">
                       <h4 className="text-lg font-semibold text-gray-900 mb-3">Tags</h4>
                       <div className="flex flex-wrap gap-2">

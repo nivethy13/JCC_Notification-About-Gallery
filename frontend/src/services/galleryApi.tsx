@@ -1,24 +1,15 @@
+// src/services/galleryApi.ts
+import type { 
+  GalleryImage, 
+  Category, 
+  Hall, 
+  ImageMetadata, 
+  ApiError, 
+  ApiResponse,
+  GalleryApiParams
+} from '../types/gallery';
+
 const API_BASE_URL = 'http://localhost:8000/api/gallery';
-
-// Types
-interface ImageMetadata {
-  title?: string;
-  description?: string;
-  category: string;
-  hall?: string;
-  is_featured?: boolean;
-  is_public?: boolean;
-  tags?: string;
-  alt_text?: string;
-}
-
-
-
-interface ApiError extends Error {
-  status?: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any;
-}
 
 // Enhanced response handler
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,16 +45,97 @@ const validateImageFile = (file: File): boolean => {
   return true;
 };
 
-// Enhanced bulk upload with better error handling and progress tracking
+// Gallery Images API
+export const fetchGalleryImages = async (
+  params: GalleryApiParams = {}
+): Promise<ApiResponse<GalleryImage> | GalleryImage[]> => {
+  try {
+    const query = new URLSearchParams(params as Record<string, string>).toString();
+    const url = query ? `${API_BASE_URL}/images/?${query}` : `${API_BASE_URL}/images/`;
+    const response = await fetch(url);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Gallery images fetch error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch gallery images');
+  }
+};
+
+export const fetchGalleryImage = async (id: string | number): Promise<GalleryImage> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/images/${id}/`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Gallery image fetch error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch image details');
+  }
+};
+
+export const createGalleryImage = async (formData: FormData): Promise<GalleryImage> => {
+  try {
+    // Validate image file if present
+    const imageFile = formData.get('image') as File;
+    if (imageFile && imageFile instanceof File) {
+      validateImageFile(imageFile);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/admin/images/`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Image creation error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to create image');
+  }
+};
+
+export const updateGalleryImage = async (
+  id: string | number, 
+  data: Partial<GalleryImage>
+): Promise<GalleryImage> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/images/${id}/`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Update error:', error);
+    throw error;
+  }
+};
+
+export const deleteGalleryImage = async (id: string | number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/images/${id}/`, {
+      method: 'DELETE',
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || errorData.detail || 'Failed to delete image');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Image deletion error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to delete image');
+  }
+};
+
+// Bulk Operations
 export const bulkUploadImages = async (
   files: File[], 
   metadata: ImageMetadata, 
   onProgress?: (progress: number) => void
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any[]> => {
+): Promise<GalleryImage[]> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const uploadedImages: any[] = [];
+    const uploadedImages: GalleryImage[] = [];
     const failedUploads: Array<{ file: string; error: string }> = [];
     const totalFiles = files.length;
     
@@ -122,116 +194,10 @@ export const bulkUploadImages = async (
       console.warn('Some uploads failed:', failedUploads);
     }
 
-    return uploadedImages; // Return successful uploads for compatibility
+    return uploadedImages;
   } catch (err) {
     console.error('Bulk upload error:', err);
     throw new Error(err instanceof Error ? err.message : 'Failed to upload images');
-  }
-};
-
-// Enhanced single image upload
-export const createGalleryImage = async (formData: FormData): Promise<unknown> => {
-  try {
-    // Validate image file if present
-    const imageFile = formData.get('image') as File;
-    if (imageFile && imageFile instanceof File) {
-      validateImageFile(imageFile);
-    }
-
-    const response = await fetch(`${API_BASE_URL}/admin/images/`, {
-      method: 'POST',
-      body: formData,
-    });
-    
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Image creation error:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to create image');
-  }
-};
-
-// Fetch gallery images with enhanced filtering
-export const fetchGalleryImages = async (
-  params: Record<string, unknown> = {}
-): Promise<unknown> => {
-  try {
-    const query = new URLSearchParams(params as Record<string, string>).toString();
-    const url = query ? `${API_BASE_URL}/images/?${query}` : `${API_BASE_URL}/images/`;
-    const response = await fetch(url);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Gallery images fetch error:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to fetch gallery images');
-  }
-};
-
-// Fetch single image with view increment
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const fetchGalleryImage = async (id: string | number): Promise<any> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/images/${id}/`);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Gallery image fetch error:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to fetch image details');
-  }
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const fetchCategories = async (): Promise<any> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/categories/`);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Categories fetch error:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to fetch categories');
-  }
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const fetchHalls = async (): Promise<any> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/halls/`);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Halls fetch error:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to fetch halls');
-  }
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const updateGalleryImage = async (id: string | number, data: Record<string, any>): Promise<any> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/admin/images/${id}/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Update error:', error);
-    throw error;
-  }
-};
-
-export const deleteGalleryImage = async (id: string | number): Promise<boolean> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/admin/images/${id}/`, {
-      method: 'DELETE',
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || errorData.detail || 'Failed to delete image');
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Image deletion error:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to delete image');
   }
 };
 
@@ -252,8 +218,11 @@ export const bulkDeleteImages = async (ids: (string | number)[]): Promise<any> =
   }
 };
 
+export const bulkUpdateImages = async (
+  ids: (string | number)[], 
+  updateData: Partial<GalleryImage>
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const bulkUpdateImages = async (ids: (string | number)[], updateData: Record<string, any>): Promise<any> => {
+): Promise<any> => {
   try {
     const response = await fetch(`${API_BASE_URL}/admin/images/bulk-update/`, {
       method: 'POST',
@@ -273,9 +242,18 @@ export const bulkUpdateImages = async (ids: (string | number)[], updateData: Rec
   }
 };
 
-// Category Management APIs
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createCategory = async (data: Record<string, any>): Promise<any> => {
+// Categories API
+export const fetchCategories = async (): Promise<ApiResponse<Category> | Category[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Categories fetch error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch categories');
+  }
+};
+
+export const createCategory = async (data: Omit<Category, 'id'>): Promise<Category> => {
   try {
     const response = await fetch(`${API_BASE_URL}/admin/categories/`, {
       method: 'POST',
@@ -309,9 +287,23 @@ export const deleteCategory = async (id: string | number): Promise<boolean> => {
   }
 };
 
-// Cloudinary specific utilities
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getOptimizedImageUrl = (publicId: string, transformations: Record<string, any> = {}): string | null => {
+// Halls API
+export const fetchHalls = async (): Promise<ApiResponse<Hall> | Hall[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/halls/`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Halls fetch error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch halls');
+  }
+};
+
+// Cloudinary utilities
+export const getOptimizedImageUrl = (
+  publicId: string, 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformations: Record<string, any> = {}
+): string | null => {
   if (!publicId) return null;
   
   const baseUrl = 'https://res.cloudinary.com/damplktwn/image/upload';

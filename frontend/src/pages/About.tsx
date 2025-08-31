@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badage";
 import { Calendar, Heart, Users, Building, MapPin, Phone, Mail, BookOpen, Music, Handshake, Globe, Library, GraduationCap, Flower2, Images } from "lucide-react";
 import { aboutApi } from "../services/aboutService";
 import type { About as AboutType } from "../types/about";

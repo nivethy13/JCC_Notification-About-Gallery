@@ -20,9 +20,11 @@ from . import views
 urlpatterns = [
     # About Page APIs
     path('', views.about_page_content, name='about-content'),
-    path('content/', views.AboutDetailView.as_view(), name='about-content-detail'),
+    path('content/', views.AboutDetailView.as_view(), name='about-content-detail'),    
     
-    # # Gallery APIs (Separate from About)
+]
+
+# # Gallery APIs (Separate from About)
     # path('gallery/', views.GalleryListCreateView.as_view(), name='gallery-list-create'),
     # path('gallery/<int:pk>/', views.GalleryDetailView.as_view(), name='gallery-detail'),
     # path('gallery/category/<str:category>/', views.gallery_by_category, name='gallery-by-category'),
@@ -31,4 +33,3 @@ urlpatterns = [
     # # Gallery Management Utilities
     # path('gallery/reorder/', views.reorder_gallery, name='reorder-gallery'),
     # path('gallery/bulk-toggle/', views.bulk_toggle_gallery, name='bulk-toggle-gallery'),
-]

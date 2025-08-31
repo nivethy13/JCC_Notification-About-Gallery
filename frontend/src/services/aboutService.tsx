@@ -56,8 +56,9 @@ export const aboutApi = {
 
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        if (key === 'hero_background' && value instanceof File) {
-          formData.append(key, value);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (key === 'hero_background' && (value as any) instanceof File) {
+        formData.append(key, value as unknown as File);
         } else {
           formData.append(key, String(value));
         }
